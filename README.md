@@ -28,6 +28,8 @@ TODO
 
 * Handle circular dependencies ?
 * Avoid eval (but I don't see how)
+* I just learned that Kernel#load(path, wrap=true) will load the file in
+  an anonymous module.
 
 Tricks
 ------
