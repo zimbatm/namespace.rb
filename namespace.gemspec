@@ -11,4 +11,7 @@ pollution'
   s.email = 'jonas@pfenniger.name'
   s.files = ['README.md', 'lib/namespace.rb'] + Dir['test/**/*.rb']
   s.require_paths = ["lib"]
+
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rdoc'
 end

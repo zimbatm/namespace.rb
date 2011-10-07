@@ -16,9 +16,6 @@ module Namespace
     # not polluting the global namespace but available on the returned object.
     # Since the returned object is a Module, it can be included in the current
     # module if you're also in the context of a "Sandbox".
-    #
-    # #import has been chosen because the ruby namespace is already crowded
-    # (require, load and include are already taken)
     def open(namespace)
       namespace = normalize(namespace)
 
@@ -55,30 +52,41 @@ module Namespace
     end
 
     # Transforms a string into a normalized namespace identifier
+    #
+    # Example:
+    #   normalize("/: foo:bar/\baz ")
+    #   => foo::bar::baz
     def normalize(namespace)
       namespace.to_s.sub(/^[\/:\s]*/, '').sub(/[\/:\s]*$/, '').gsub(/[\/\\:]+/, '::')
     end
 
     # Returns the top name of a namespace
     #
-    # Example: basename("some::deep::namespace") => "namespace"
+    # Example:
+    #     basename("some::deep::namespace") => "namespace"
     def basename(namespace)
       normalize(namespace).gsub(/.*::/,'')
     end
 
-    # Raises a ScriptError if the module is included
+  private
+
+    # Namespace modules are not intended to be included.
+    # This ensures that if they are, a ScriptError is
+    # going to be raised.
     def included(mod)
       raise ScriptError, "Namespace is not designed to be included, only extended. See #{mod}"
     end
-    private :included
   end
 
 
   # options[:as] = select the imported name
   #
   # THINK: since variable is already returned, is :as necessary?
+  #
+  # #import has been chosen because the ruby namespace is already crowded
+  # (require, load and include are already taken)
   def import(namespace, options={})
-    mod = Namespace::open(namespace)
+    mod = Namespace.open(namespace)
 
     name = options[:as] || options['as'] || Namespace.basename(namespace)
     raise ConflictError, "name `#{name}` is already taken" if method_defined?(name)

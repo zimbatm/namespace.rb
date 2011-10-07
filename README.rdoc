@@ -1,5 +1,4 @@
-Namespaces for ruby
-===================
+= Namespaces for ruby
 
 It is an experiment to bring namespaces to ruby. It is not quite clear yet
 why this would be useful, but it can be interesting nonetheless.
@@ -8,11 +7,10 @@ This system is inspired by the CommonJS and Python module systems, adapted
 for the ruby particularities.
 
 
-By loading the .rb files into a temporary
-module, it is possible to avoid polluting the global namespace and select what to import
-in the current module.
+By loading the .rb files into a temporary module, it is possible to avoid
+polluting the global namespace and select what to import in the current module.
 
-Feature:
+Features:
 
 * Compatible with ruby 1.8.7 and 1.9.2 (and others?)
 * Possible to avoid namespace collision on the module level
@@ -20,19 +18,45 @@ Feature:
 Unfeatures:
 
 * uses eval and other nasty ruby hacks
-* classes and namespaces don't mix well because "class X; <<here>>; end"
- is a new context that doesn't inherit from it's parent.
+* classes and namespaces don't mix well because `class X; <<here>>; end`
+  is a new context that doesn't inherit from it's parent.
 
-TODO
-----
+== Usage
+
+See: +Namespace.open+
+
+    m = Namespace.open("hello::world")
+    m.hello
+    #=> "hello world"
+
+In the context of "hello/world.rb" Namespace#import is made available as
+a shortcut.
+
+    X = import "another::module"
+
+    def hello
+      X::Joiner.new("hello", "world").to_s
+    end
+
+Classes and modules are also exported:
+
+    class Joiner
+      def initialize(*a)
+        @args = a
+      end
+      def to_s
+        @args.join(' ')
+      end
+    end
+
+== TODO
 
 * Handle circular dependencies ?
 * Avoid eval (but I don't see how)
 * I just learned that Kernel#load(path, wrap=true) will load the file in
   an anonymous module.
 
-Tricks
-------
+== Tricks
 
 A module can emulate the main object behavior by extending itself. In that way,
 it makes it's functions directly available to consumption.
@@ -47,16 +71,12 @@ it makes it's functions directly available to consumption.
 
 TODO
 
-Bikeshed
---------
+== Bikeshed
 
 * Should ruby "namespaced" modules have their own $LOAD_PATH and file extensions ?
-* 
 
-Licence
--------
+== Licence
 
 Public domain
 
-Cheers,
-  Jonas
+Cheers, Jonas
