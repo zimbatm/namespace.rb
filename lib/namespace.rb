@@ -25,9 +25,9 @@ module Namespace
 
       # File lookup
       file_path = namespace.gsub(':', File::SEPARATOR) + '.rb'
-      file = @load_path.inject(nil) do |file, load_path|
+      file = @load_path.find do |load_path|
         path = File.join(load_path, file_path)
-        File.exists?(path) ? path : file
+        break path if File.exists?(path)
       end
 
       raise ImportError, "no such file to load -- #{file_path}" unless file
